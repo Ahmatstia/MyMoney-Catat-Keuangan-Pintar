@@ -156,7 +156,7 @@ export default function PrivacyPolicyPage() {
               Jika Anda memiliki saran, pertanyaan seputar kebijakan privasi, atau laporan kendala teknis terkait aplikasi MyMoney, silakan hubungi tim kami:
             </p>
             <div className="inline-block p-4 rounded-xl bg-slate-900 border border-slate-800 text-sm">
-              <div>📧 <strong>Email Dukungan:</strong> <a href="mailto:support@lexanova.com" className="text-cyan-400 hover:underline">support@lexanova.com</a></div>
+              <div>📧 <strong>Email Dukungan:</strong> <a href="mailto:support.lexanova@gmail.com" className="text-cyan-400 hover:underline">support.lexanova@gmail.com</a></div>
               <div className="mt-1">🌐 <strong>Situs Resmi:</strong> <Link href="/" className="text-cyan-400 hover:underline">MyMoney Web Portal</Link></div>
             </div>
           </div>

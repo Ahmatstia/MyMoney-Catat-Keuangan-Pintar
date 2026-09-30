@@ -401,7 +401,7 @@ export default function Home() {
             <a href="#keamanan" className="hover:text-cyan-400">Keamanan</a>
             <a href="#faq" className="hover:text-cyan-400">FAQ</a>
             <Link href="/privacy-policy" className="hover:text-cyan-400 text-cyan-400 font-semibold">Kebijakan Privasi</Link>
-            <a href="mailto:support@lexanova.com" className="hover:text-cyan-400">Kontak Support</a>
+            <a href="mailto:support.lexanova@gmail.com" className="hover:text-cyan-400">Kontak Support</a>
           </div>
 
           <div className="text-xs text-slate-500">
