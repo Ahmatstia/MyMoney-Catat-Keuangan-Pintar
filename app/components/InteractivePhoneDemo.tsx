@@ -1,6 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
+import Icon, { type IconName } from "./Icon";
+import { formatNumber, formatRupiah } from "../format";
+
+type TabId = "home" | "transactions" | "budget" | "splitbill";
+type Tone = "cyan" | "mint" | "paper";
 
 interface Transaction {
   id: string;
@@ -10,62 +15,69 @@ interface Transaction {
   category: string;
   wallet: string;
   date: string;
-  icon: string;
+  icon: IconName;
 }
 
 interface Wallet {
   id: string;
   name: string;
   balance: number;
-  icon: string;
-  color: string;
+  icon: IconName;
+  tone: Tone;
 }
 
+const INITIAL_WALLETS: Wallet[] = [
+  { id: "1", name: "BCA Tabungan", balance: 7500000, icon: "bank", tone: "cyan" },
+  { id: "2", name: "Dompet Kas", balance: 650000, icon: "cash", tone: "mint" },
+  { id: "3", name: "GoPay / OVO", balance: 350000, icon: "wallet", tone: "paper" },
+];
+
+const INITIAL_TRANSACTIONS: Transaction[] = [
+  { id: "1", title: "Kopi & Makan Siang", amount: 45000, type: "expense", category: "Makanan", wallet: "Dompet Kas", date: "Hari ini, 12:30", icon: "coffee" },
+  { id: "2", title: "Gaji Bulanan", amount: 8000000, type: "income", category: "Gaji", wallet: "BCA Tabungan", date: "Kemarin, 09:00", icon: "cash" },
+  { id: "3", title: "Bensin Motor", amount: 30000, type: "expense", category: "Transport", wallet: "Dompet Kas", date: "28 Sep", icon: "fuel" },
+];
+
+const TONE_CLASS: Record<Tone, string> = {
+  cyan: "bg-signal text-ink-950",
+  mint: "bg-mint text-ink-950",
+  paper: "bg-paper-100 text-ink-950",
+};
+
+const TABS: { id: TabId; label: string; icon: IconName }[] = [
+  { id: "home", label: "Beranda", icon: "home" },
+  { id: "transactions", label: "Riwayat", icon: "history" },
+  { id: "budget", label: "Budget", icon: "target" },
+  { id: "splitbill", label: "Tools", icon: "calc" },
+];
+
 export default function InteractivePhoneDemo() {
-  const [activeTab, setActiveTab] = useState<"home" | "transactions" | "budget" | "splitbill">("home");
+  const [activeTab, setActiveTab] = useState<TabId>("home");
   const [hideBalance, setHideBalance] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [airplane, setAirplane] = useState(false);
 
-  // Initial Wallets
-  const [wallets, setWallets] = useState<Wallet[]>([
-    { id: "1", name: "BCA Tabungan", balance: 7500000, icon: "🏦", color: "from-blue-600 to-indigo-800" },
-    { id: "2", name: "Dompet Kas", balance: 650000, icon: "💵", color: "from-emerald-600 to-teal-800" },
-    { id: "3", name: "GoPay / OVO", balance: 350000, icon: "📱", color: "from-cyan-600 to-blue-800" },
-  ]);
-
-  // Initial Transactions
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    { id: "1", title: "Kopi & Makan Siang", amount: 45000, type: "expense", category: "Makanan", wallet: "Dompet Kas", date: "Hari ini, 12:30", icon: "☕" },
-    { id: "2", title: "Gaji Bulanan", amount: 8000000, type: "income", category: "Gaji", wallet: "BCA Tabungan", date: "Kemarin, 09:00", icon: "💰" },
-    { id: "3", title: "Bensin Motor", amount: 30000, type: "expense", category: "Transport", wallet: "Dompet Kas", date: "28 Sep", icon: "⛽" },
-  ]);
+  const [wallets, setWallets] = useState<Wallet[]>(INITIAL_WALLETS);
+  const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
 
   // Form State
   const [formType, setFormType] = useState<"expense" | "income">("expense");
   const [formAmount, setFormAmount] = useState("35000");
   const [formTitle, setFormTitle] = useState("Kopi Janji Jiwa");
-  const [formCategory, setFormCategory] = useState("Makanan");
+  const [formCategory] = useState("Makanan");
   const [formWallet, setFormWallet] = useState("Dompet Kas");
 
   // Split Bill State
   const [billAmount, setBillAmount] = useState(150000);
   const [billPeople, setBillPeople] = useState(3);
-  const [billTax, setBillTax] = useState(11);
-  const [billTip, setBillTip] = useState(10000);
+  const [billTax] = useState(11);
+  const [billTip] = useState(10000);
   const [copiedBill, setCopiedBill] = useState(false);
 
   // Calculations
   const totalBalance = wallets.reduce((acc, w) => acc + w.balance, 0);
-  const totalIncome = transactions.filter(t => t.type === "income").reduce((acc, t) => acc + t.amount, 0);
-  const totalExpense = transactions.filter(t => t.type === "expense").reduce((acc, t) => acc + t.amount, 0);
-
-  const formatRupiah = (num: number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      maximumFractionDigits: 0,
-    }).format(num);
-  };
+  const totalIncome = transactions.filter((t) => t.type === "income").reduce((acc, t) => acc + t.amount, 0);
+  const totalExpense = transactions.filter((t) => t.type === "expense").reduce((acc, t) => acc + t.amount, 0);
 
   const handleAddTransaction = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,11 +92,11 @@ export default function InteractivePhoneDemo() {
       category: formCategory,
       wallet: formWallet,
       date: "Baru saja",
-      icon: formCategory === "Makanan" ? "🍔" : formCategory === "Transport" ? "🚗" : formCategory === "Gaji" ? "💵" : "✨",
+      icon: formCategory === "Makanan" ? "food" : formCategory === "Transport" ? "car" : formCategory === "Gaji" ? "cash" : "spark",
     };
 
-    setWallets(prev =>
-      prev.map(w => {
+    setWallets((prev) =>
+      prev.map((w) => {
         if (w.name === formWallet) {
           return {
             ...w,
@@ -100,17 +112,10 @@ export default function InteractivePhoneDemo() {
   };
 
   const handleResetDemo = () => {
-    setWallets([
-      { id: "1", name: "BCA Tabungan", balance: 7500000, icon: "🏦", color: "from-blue-600 to-indigo-800" },
-      { id: "2", name: "Dompet Kas", balance: 650000, icon: "💵", color: "from-emerald-600 to-teal-800" },
-      { id: "3", name: "GoPay / OVO", balance: 350000, icon: "📱", color: "from-cyan-600 to-blue-800" },
-    ]);
-    setTransactions([
-      { id: "1", title: "Kopi & Makan Siang", amount: 45000, type: "expense", category: "Makanan", wallet: "Dompet Kas", date: "Hari ini, 12:30", icon: "☕" },
-      { id: "2", title: "Gaji Bulanan", amount: 8000000, type: "income", category: "Gaji", wallet: "BCA Tabungan", date: "Kemarin, 09:00", icon: "💰" },
-      { id: "3", title: "Bensin Motor", amount: 30000, type: "expense", category: "Transport", wallet: "Dompet Kas", date: "28 Sep", icon: "⛽" },
-    ]);
+    setWallets(INITIAL_WALLETS);
+    setTransactions(INITIAL_TRANSACTIONS);
     setActiveTab("home");
+    setAirplane(false);
   };
 
   // Split bill calc
@@ -119,452 +124,511 @@ export default function InteractivePhoneDemo() {
   const perPerson = Math.ceil(grandTotal / (billPeople || 1));
 
   const handleCopyBill = () => {
-    const text = "*Rincian Split Bill MyMoney*\nTotal Tagihan: " + formatRupiah(grandTotal) + "\nJumlah Orang: " + billPeople + "\n*Per Orang: " + formatRupiah(perPerson) + "*\n\n_Dihitung dengan MyMoney App_";
+    const text =
+      "*Rincian Split Bill MyMoney*\nTotal Tagihan: " +
+      formatRupiah(grandTotal) +
+      "\nJumlah Orang: " +
+      billPeople +
+      "\n*Per Orang: " +
+      formatRupiah(perPerson) +
+      "*\n\n_Dihitung dengan MyMoney App_";
     navigator.clipboard?.writeText(text);
     setCopiedBill(true);
     setTimeout(() => setCopiedBill(false), 2500);
   };
 
   return (
-    <div className="relative w-full flex flex-col items-center">
-      {/* Interactive Control Pill (Clean & Floating) */}
-      <div className="mb-5 inline-flex items-center gap-2 p-1.5 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800/90 shadow-2xl z-20">
-        <span className="text-[11px] font-bold text-cyan-400 px-2.5 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-          Live Demo
-        </span>
+    <div className="relative flex w-full flex-col items-center xl:items-end">
+      {/* Kontrol demo */}
+      <div className="mb-5 flex w-full max-w-[340px] flex-wrap items-center gap-2 xl:max-w-[600px] xl:justify-end">
         <button
+          type="button"
           onClick={() => {
             setActiveTab("home");
             setShowAddModal(true);
           }}
-          className="px-3 py-1 rounded-xl bg-cyan-500 text-slate-950 text-xs font-bold hover:bg-cyan-400 transition-all cursor-pointer shadow-md active:scale-95"
+          className="inline-flex items-center gap-1.5 rounded-md bg-signal px-3 py-2 text-xs font-semibold text-ink-950 transition-colors hover:bg-paper-50"
         >
-          + Catat Transaksi
+          <Icon name="plus" size={14} strokeWidth={2.4} />
+          Catat transaksi
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab("splitbill")}
-          className="px-3 py-1 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs font-semibold hover:bg-purple-500/30 transition-all cursor-pointer active:scale-95"
+          className="inline-flex items-center gap-1.5 rounded-md border border-ink-600 px-3 py-2 text-xs font-semibold text-paper-100 transition-colors hover:bg-ink-800"
         >
-          ⚡ Split Bill
+          <Icon name="calc" size={14} />
+          Split bill
         </button>
         <button
-          onClick={handleResetDemo}
-          className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs transition-all cursor-pointer active:scale-95"
-          title="Reset Data"
+          type="button"
+          onClick={() => setAirplane((v) => !v)}
+          aria-pressed={airplane}
+          className={
+            "inline-flex items-center gap-1.5 rounded-md border px-3 py-2 text-xs font-semibold transition-colors " +
+            (airplane
+              ? "border-signal bg-ink-800 text-signal"
+              : "border-ink-600 text-paper-100 hover:bg-ink-800")
+          }
         >
-          🔄
+          <Icon name="plane" size={14} />
+          Mode pesawat {airplane ? "aktif" : ""}
+        </button>
+        <button
+          type="button"
+          onClick={handleResetDemo}
+          aria-label="Reset data demo"
+          title="Reset data demo"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-ink-600 text-mist transition-colors hover:bg-ink-800 hover:text-paper-50"
+        >
+          <Icon name="reset" size={14} />
         </button>
       </div>
 
-      {/* Titanium Phone Chassis (Ultra Realistic, Fixed Heights, ZERO Scrollbar) */}
-      <div className="relative w-[340px] sm:w-[360px] h-[670px] rounded-[50px] bg-[#070B12] p-[11px] shadow-[0_25px_70px_-15px_rgba(0,0,0,0.9)] border-[5px] border-slate-800/90 ring-1 ring-slate-700/60 flex flex-col justify-between overflow-hidden select-none">
-        
-        {/* Ambient Inner Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative flex w-full items-start justify-center xl:justify-end">
+        {/* Struk langsung: isinya mengikuti transaksi di ponsel */}
+        <aside
+          aria-label="Struk langsung dari demo"
+          className="relative z-0 mr-[-0.5rem] mt-16 hidden w-[224px] shrink-0 -rotate-3 drop-shadow-[0_18px_28px_rgba(0,0,0,0.4)] xl:block"
+        >
+          <div className="print-feed">
+            <div className="receipt px-4 pt-5 text-[11px] leading-snug">
+              <p className="font-display text-lg font-bold leading-none">MyMoney</p>
+              <p className="mt-1 text-[10px] text-moss">Struk langsung dari demo</p>
+              <div className="my-3 border-t border-dashed border-leaf/40" />
 
-        {/* Dynamic Island & Status Bar */}
-        <div className="relative z-30 flex items-center justify-between px-5 pt-1 pb-1 text-slate-400 text-[11px] font-semibold">
-          <span>09:41</span>
-          <div className="w-20 h-4 bg-slate-950 rounded-full border border-slate-800 flex items-center justify-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-slate-800"></span>
-            <span className="w-1 h-1 rounded-full bg-cyan-400 animate-pulse"></span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span>5G</span>
-            <div className="w-4 h-2 rounded-[3px] border border-slate-400 p-[1px] flex items-center">
-              <div className="h-full w-full bg-slate-300 rounded-[1px]"></div>
+              <ul className="space-y-2">
+                {transactions.slice(0, 5).map((t) => (
+                  <li key={t.id} className="line-in">
+                    <p className="truncate">{t.title}</p>
+                    <p className="flex items-baseline gap-1 text-moss">
+                      <span className="truncate">{t.wallet}</span>
+                      <span className="leader" />
+                      <span className={t.type === "income" ? "text-signal-deep" : "text-stamp"}>
+                        {t.type === "income" ? "+" : "-"}
+                        {formatNumber(t.amount)}
+                      </span>
+                    </p>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="my-3 border-t border-dashed border-leaf/40" />
+              <dl className="space-y-1">
+                <div className="flex items-baseline gap-1">
+                  <dt>Pemasukan</dt>
+                  <span className="leader" />
+                  <dd>{formatNumber(totalIncome)}</dd>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <dt>Pengeluaran</dt>
+                  <span className="leader" />
+                  <dd>{formatNumber(totalExpense)}</dd>
+                </div>
+                <div className="flex items-baseline gap-1 font-medium">
+                  <dt>Saldo</dt>
+                  <span className="leader" />
+                  <dd>{formatNumber(totalBalance)}</dd>
+                </div>
+              </dl>
+
+              <div className="mt-4 flex items-end justify-between gap-2">
+                <p className="text-[10px] leading-tight text-moss">
+                  {airplane ? "Tanpa sinyal. Tetap tercatat." : "Tersimpan di ponsel ini."}
+                </p>
+                <span className={"stamp shrink-0 text-[10px] " + (airplane ? "text-stamp" : "text-signal-deep")}>
+                  {airplane ? "Offline" : "Lokal"}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        </aside>
 
-        {/* SCREEN INNER CONTAINER (Zero Scrollbar, Fixed Height View) */}
-        <div className="relative z-20 flex-1 px-3.5 py-1.5 flex flex-col justify-between overflow-hidden font-sans">
-          
-          {/* TAB 1: HOME */}
-          {activeTab === "home" && (
-            <div className="flex-1 flex flex-col justify-between animate-fadeIn">
-              {/* Profile Bar */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-black text-xs shadow-md">
-                    AS
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-slate-400 font-medium">Selamat Datang,</p>
-                    <p className="text-xs font-bold text-white leading-none">Ahmat Setiadi</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setHideBalance(!hideBalance)}
-                  className="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[10px] text-slate-300 hover:text-cyan-400 transition-colors cursor-pointer"
-                >
-                  {hideBalance ? "🙈 Buka" : "👁️ Intip"}
-                </button>
-              </div>
+        {/* Ponsel */}
+        <div className="relative z-10 flex h-[660px] w-[min(340px,100%)] shrink-0 select-none flex-col overflow-hidden rounded-[44px] border border-ink-600 bg-ink-950 p-[10px] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)]">
+          {/* Status bar */}
+          <div className="relative z-30 flex items-center justify-between px-5 pb-1 pt-1.5 font-mono text-[11px] text-mist">
+            <span>09:41</span>
+            <span className="h-4 w-16 rounded-full bg-ink-900" aria-hidden="true" />
+            <span className="flex items-center gap-1.5">
+              {airplane ? <Icon name="plane" size={12} className="text-signal" /> : <span>5G</span>}
+              <span className="flex h-2 w-4 items-center rounded-[3px] border border-mist p-[1px]">
+                <span className="h-full w-full rounded-[1px] bg-mist" />
+              </span>
+            </span>
+          </div>
 
-              {/* Total Balance Card */}
-              <div className="p-3.5 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950/40 border border-cyan-500/30 shadow-lg relative overflow-hidden">
-                <p className="text-[10px] text-slate-400 font-medium">Total Saldo Operasional</p>
-                <h3 className="text-xl font-black text-white tracking-tight mt-0.5">
-                  {hideBalance ? "Rp ••••••••" : formatRupiah(totalBalance)}
-                </h3>
+          {/* Layar */}
+          <div className="no-scrollbar relative z-20 flex min-h-0 flex-1 flex-col overflow-hidden rounded-[30px] bg-ink-900 px-3.5 py-3">
+            {airplane && (
+              <p className="fade-in mb-2 flex items-center gap-1.5 rounded-md bg-ink-800 px-2.5 py-1.5 text-[10px] text-signal">
+                <Icon name="plane" size={11} />
+                Tanpa sinyal. Semua fitur tetap jalan.
+              </p>
+            )}
 
-                <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-800/80 text-[10px]">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-emerald-400 font-bold">↓</span>
+            {/* TAB: BERANDA */}
+            {activeTab === "home" && (
+              <div className="fade-in flex flex-1 flex-col justify-between gap-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-signal text-xs font-bold text-ink-950">
+                      AS
+                    </div>
                     <div>
-                      <span className="text-slate-400 block text-[9px]">Pemasukan</span>
-                      <span className="font-bold text-emerald-400">{hideBalance ? "•••" : formatRupiah(totalIncome)}</span>
+                      <p className="text-[10px] text-mist">Selamat datang,</p>
+                      <p className="text-xs font-semibold leading-none text-paper-50">Ahmat Setiadi</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-rose-400 font-bold">↑</span>
+                  <button
+                    type="button"
+                    onClick={() => setHideBalance(!hideBalance)}
+                    aria-label={hideBalance ? "Tampilkan saldo" : "Sembunyikan saldo"}
+                    className="inline-flex items-center gap-1 rounded-md border border-ink-600 px-2 py-1 text-[10px] text-mist transition-colors hover:text-paper-50"
+                  >
+                    <Icon name={hideBalance ? "eyeOff" : "eye"} size={12} />
+                    {hideBalance ? "Buka" : "Intip"}
+                  </button>
+                </div>
+
+                <div className="rounded-xl border border-ink-600 bg-ink-800 p-3.5">
+                  <p className="text-[10px] text-mist">Total saldo operasional</p>
+                  <p className="mt-0.5 font-mono text-xl font-medium tracking-tight text-paper-50">
+                    {hideBalance ? "Rp ••••••••" : formatRupiah(totalBalance)}
+                  </p>
+                  <div className="mt-2.5 grid grid-cols-2 gap-2 border-t border-ink-600 pt-2.5 text-[10px]">
                     <div>
-                      <span className="text-slate-400 block text-[9px]">Pengeluaran</span>
-                      <span className="font-bold text-rose-400">{hideBalance ? "•••" : formatRupiah(totalExpense)}</span>
+                      <p className="text-mist">Pemasukan</p>
+                      <p className="font-mono font-medium text-mint">{hideBalance ? "•••" : formatRupiah(totalIncome)}</p>
+                    </div>
+                    <div>
+                      <p className="text-mist">Pengeluaran</p>
+                      <p className="font-mono font-medium text-coral">{hideBalance ? "•••" : formatRupiah(totalExpense)}</p>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Wallets Horizontal */}
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[11px] font-bold text-slate-300">Dompet &amp; Rekening</span>
-                  <span className="text-[10px] text-cyan-400 font-semibold">{wallets.length} Akun</span>
-                </div>
-                <div className="flex gap-2 overflow-hidden">
-                  {wallets.map(w => (
-                    <div
-                      key={w.id}
-                      className={"flex-1 p-2 rounded-xl bg-gradient-to-br " + w.color + " text-white shadow-sm flex flex-col justify-between"}
-                    >
-                      <span className="text-xs">{w.icon}</span>
-                      <div className="mt-1">
-                        <p className="text-[9px] opacity-80 font-medium truncate">{w.name}</p>
-                        <p className="text-[11px] font-black truncate">{hideBalance ? "••••" : formatRupiah(w.balance)}</p>
+                <div>
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-paper-100">Dompet dan rekening</span>
+                    <span className="text-[10px] text-mist">{wallets.length} akun</span>
+                  </div>
+                  <div className="flex gap-2">
+                    {wallets.map((w) => (
+                      <div key={w.id} className={"flex min-w-0 flex-1 flex-col justify-between rounded-lg p-2 " + TONE_CLASS[w.tone]}>
+                        <Icon name={w.icon} size={14} />
+                        <div className="mt-1.5 min-w-0">
+                          <p className="truncate text-[9px] font-medium opacity-80">{w.name}</p>
+                          <p className="truncate font-mono text-[11px] font-medium">
+                            {hideBalance ? "••••" : formatRupiah(w.balance)}
+                          </p>
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-paper-100">Transaksi terkini</span>
+                    <button type="button" onClick={() => setActiveTab("transactions")} className="text-[10px] text-signal hover:underline">
+                      Semua
+                    </button>
+                  </div>
+                  {transactions.slice(0, 2).map((t) => (
+                    <div key={t.id} className="flex items-center justify-between rounded-lg bg-ink-800 p-2">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-ink-700 text-paper-100">
+                          <Icon name={t.icon} size={14} />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate text-xs font-semibold text-paper-50">{t.title}</p>
+                          <p className="text-[9px] text-mist">{t.wallet}</p>
+                        </div>
+                      </div>
+                      <p className={"shrink-0 pl-2 font-mono text-[11px] font-medium " + (t.type === "income" ? "text-mint" : "text-paper-100")}>
+                        {t.type === "income" ? "+" : "-"}
+                        {formatRupiah(t.amount)}
+                      </p>
                     </div>
                   ))}
                 </div>
-              </div>
 
-              {/* Recent Transactions List */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-slate-300">Transaksi Terkini</span>
-                  <button onClick={() => setActiveTab("transactions")} className="text-[10px] text-cyan-400 hover:underline cursor-pointer">
-                    Semua
-                  </button>
-                </div>
-                {transactions.slice(0, 2).map(t => (
-                  <div
-                    key={t.id}
-                    className="p-2 rounded-xl bg-slate-900/90 border border-slate-800/80 flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-xs">
-                        {t.icon}
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-white line-clamp-1">{t.title}</p>
-                        <p className="text-[9px] text-slate-400">{t.wallet}</p>
-                      </div>
-                    </div>
-                    <p
-                      className={"text-xs font-black " + (t.type === "income" ? "text-emerald-400" : "text-slate-200")}
-                    >
-                      {t.type === "income" ? "+" : "-"}
-                      {formatRupiah(t.amount)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Quick Add Button */}
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="w-full py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 text-slate-950 font-black text-xs shadow-md flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all"
-              >
-                <span>➕</span> Catat Transaksi (Coba Sekarang)
-              </button>
-            </div>
-          )}
-
-          {/* TAB 2: TRANSACTIONS */}
-          {activeTab === "transactions" && (
-            <div className="flex-1 flex flex-col justify-between py-1 animate-fadeIn">
-              <div className="flex items-center justify-between pb-1 border-b border-slate-800">
-                <h4 className="text-xs font-bold text-white">Riwayat Transaksi</h4>
-                <span className="text-[10px] text-slate-400">{transactions.length} Data</span>
-              </div>
-              <div className="space-y-1.5 my-auto">
-                {transactions.slice(0, 4).map(t => (
-                  <div
-                    key={t.id}
-                    className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-xs">
-                        {t.icon}
-                      </div>
-                      <div>
-                        <p className="text-xs font-bold text-white">{t.title}</p>
-                        <p className="text-[9px] text-slate-400">{t.category} • {t.wallet}</p>
-                      </div>
-                    </div>
-                    <p
-                      className={"text-xs font-black " + (t.type === "income" ? "text-emerald-400" : "text-rose-400")}
-                    >
-                      {t.type === "income" ? "+" : "-"}
-                      {formatRupiah(t.amount)}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="w-full py-2 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs cursor-pointer"
-              >
-                + Tambah Transaksi
-              </button>
-            </div>
-          )}
-
-          {/* TAB 3: BUDGET */}
-          {activeTab === "budget" && (
-            <div className="flex-1 flex flex-col justify-between py-1 animate-fadeIn">
-              <div className="flex items-center justify-between pb-1 border-b border-slate-800">
-                <h4 className="text-xs font-bold text-white">Anggaran &amp; Tabungan</h4>
-                <span className="text-[10px] text-emerald-400 font-semibold">Terkontrol</span>
-              </div>
-
-              <div className="space-y-2.5 my-auto">
-                {/* Budget 1 */}
-                <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-white">🍔 Makanan &amp; Jajan</span>
-                    <span className="text-slate-400 text-[10px]">Rp 750rb / 1.5jt</span>
-                  </div>
-                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-cyan-400 rounded-full w-1/2" />
-                  </div>
-                  <p className="text-[9px] text-slate-400">Sisa kuota belanja aman: Rp 750.000</p>
-                </div>
-
-                {/* Budget 2 */}
-                <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-white">🚗 Transport &amp; Bensin</span>
-                    <span className="text-slate-400 text-[10px]">Rp 200rb / 500rb</span>
-                  </div>
-                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-400 rounded-full w-2/5" />
-                  </div>
-                  <p className="text-[9px] text-slate-400">Sisa kuota: Rp 300.000 (40% terpakai)</p>
-                </div>
-
-                {/* Wishlist */}
-                <div className="p-2.5 rounded-xl bg-indigo-950/50 border border-indigo-500/30 space-y-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-bold text-indigo-300">🎯 Liburan Akhir Tahun</span>
-                    <span className="text-[9px] bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded-full font-bold">65%</span>
-                  </div>
-                  <p className="text-xs font-black text-white">Rp 6.500.000 / Rp 10.000.000</p>
-                  <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-indigo-500 rounded-full w-[65%]" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-2 rounded-xl bg-slate-900/60 text-center text-[10px] text-slate-400">
-                Peringatan otomatis aktif saat mendekati limit 80%.
-              </div>
-            </div>
-          )}
-
-          {/* TAB 4: SPLIT BILL */}
-          {activeTab === "splitbill" && (
-            <div className="flex-1 flex flex-col justify-between py-1 animate-fadeIn">
-              <div className="flex items-center justify-between pb-1 border-b border-slate-800">
-                <h4 className="text-xs font-bold text-white">⚡ Kalkulator Split Bill</h4>
-                <span className="text-[9px] bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded font-bold">Instan</span>
-              </div>
-
-              <div className="space-y-2 my-auto">
-                <div className="p-2 rounded-xl bg-slate-900 border border-slate-800">
-                  <label className="text-[9px] text-slate-400 uppercase font-bold">Total Tagihan (Rp)</label>
-                  <input
-                    type="number"
-                    value={billAmount}
-                    onChange={e => setBillAmount(Number(e.target.value) || 0)}
-                    className="w-full bg-transparent text-sm font-black text-white focus:outline-none"
-                  />
-                </div>
-
-                <div className="p-2 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
-                  <span className="text-xs font-bold text-white">Jumlah Orang</span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setBillPeople(Math.max(1, billPeople - 1))}
-                      className="w-6 h-6 rounded bg-slate-800 text-white font-bold text-xs"
-                    >
-                      -
-                    </button>
-                    <span className="text-xs font-black text-cyan-400">{billPeople} org</span>
-                    <button
-                      onClick={() => setBillPeople(billPeople + 1)}
-                      className="w-6 h-6 rounded bg-slate-800 text-white font-bold text-xs"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-950/80 to-slate-900 border border-purple-500/40 text-center space-y-0.5">
-                  <p className="text-[10px] text-purple-200">Setiap Orang Bayar (+PPN 11%):</p>
-                  <p className="text-lg font-black text-white tracking-tight">{formatRupiah(perPerson)}</p>
-                  <p className="text-[8px] text-slate-400">Total + Pajak &amp; Tip: {formatRupiah(grandTotal)}</p>
-                </div>
-              </div>
-
-              <button
-                onClick={handleCopyBill}
-                className="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs cursor-pointer transition-all active:scale-95 flex items-center justify-center gap-1"
-              >
-                {copiedBill ? "✅ Tersalin!" : "📲 Salin ke WhatsApp"}
-              </button>
-            </div>
-          )}
-
-        </div>
-
-        {/* BOTTOM NAV BAR */}
-        <div className="relative z-30 bg-slate-900/95 border-t border-slate-800/80 px-1 py-1.5 flex items-center justify-around rounded-b-[40px]">
-          <button
-            onClick={() => setActiveTab("home")}
-            className={"flex flex-col items-center text-[9px] font-bold cursor-pointer " + (activeTab === "home" ? "text-cyan-400" : "text-slate-500")}
-          >
-            <span className="text-sm">🏠</span>
-            <span>Beranda</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("transactions")}
-            className={"flex flex-col items-center text-[9px] font-bold cursor-pointer " + (activeTab === "transactions" ? "text-cyan-400" : "text-slate-500")}
-          >
-            <span className="text-sm">📜</span>
-            <span>Riwayat</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("budget")}
-            className={"flex flex-col items-center text-[9px] font-bold cursor-pointer " + (activeTab === "budget" ? "text-cyan-400" : "text-slate-500")}
-          >
-            <span className="text-sm">🎯</span>
-            <span>Budget</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab("splitbill")}
-            className={"flex flex-col items-center text-[9px] font-bold cursor-pointer " + (activeTab === "splitbill" ? "text-purple-400" : "text-slate-500")}
-          >
-            <span className="text-sm">⚡</span>
-            <span>Tools</span>
-          </button>
-        </div>
-
-        {/* MODAL SHEET (Clean Pop-up) */}
-        {showAddModal && (
-          <div className="absolute inset-0 z-40 bg-slate-950/90 backdrop-blur-md flex flex-col justify-end p-2 animate-fadeIn">
-            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-3.5 space-y-2.5 shadow-2xl">
-              <div className="flex items-center justify-between pb-1 border-b border-slate-800">
-                <span className="text-xs font-bold text-white">Catat Transaksi</span>
-                <button
-                  onClick={() => setShowAddModal(false)}
-                  className="w-5 h-5 rounded-full bg-slate-800 text-slate-400 hover:text-white text-[10px] font-bold flex items-center justify-center cursor-pointer"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Type Switcher */}
-              <div className="grid grid-cols-2 gap-1 bg-slate-950 p-0.5 rounded-lg border border-slate-800 text-[11px] font-bold">
                 <button
                   type="button"
-                  onClick={() => setFormType("expense")}
-                  className={"py-1 rounded-md cursor-pointer " + (formType === "expense" ? "bg-rose-500 text-white" : "text-slate-400")}
+                  onClick={() => setShowAddModal(true)}
+                  className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-signal py-2.5 text-xs font-bold text-ink-950 transition-colors hover:bg-paper-50 active:scale-[0.98]"
                 >
-                  Pengeluaran
+                  <Icon name="plus" size={14} strokeWidth={2.4} />
+                  Catat transaksi
                 </button>
+              </div>
+            )}
+
+            {/* TAB: RIWAYAT */}
+            {activeTab === "transactions" && (
+              <div className="fade-in flex flex-1 flex-col justify-between gap-2">
+                <div className="flex items-center justify-between border-b border-ink-600 pb-2">
+                  <h4 className="text-xs font-semibold text-paper-50">Riwayat transaksi</h4>
+                  <span className="text-[10px] text-mist">{transactions.length} data</span>
+                </div>
+                <div className="my-auto space-y-1.5">
+                  {transactions.slice(0, 4).map((t) => (
+                    <div key={t.id} className="flex items-center justify-between rounded-lg bg-ink-800 p-2.5">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-ink-700 text-paper-100">
+                          <Icon name={t.icon} size={14} />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate text-xs font-semibold text-paper-50">{t.title}</p>
+                          <p className="truncate text-[9px] text-mist">
+                            {t.category}, {t.wallet}
+                          </p>
+                        </div>
+                      </div>
+                      <p className={"shrink-0 pl-2 font-mono text-[11px] font-medium " + (t.type === "income" ? "text-mint" : "text-coral")}>
+                        {t.type === "income" ? "+" : "-"}
+                        {formatRupiah(t.amount)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
                 <button
                   type="button"
-                  onClick={() => setFormType("income")}
-                  className={"py-1 rounded-md cursor-pointer " + (formType === "income" ? "bg-emerald-500 text-white" : "text-slate-400")}
+                  onClick={() => setShowAddModal(true)}
+                  className="w-full rounded-lg bg-signal py-2.5 text-xs font-bold text-ink-950 transition-colors hover:bg-paper-50"
                 >
-                  Pemasukan
+                  Tambah transaksi
                 </button>
               </div>
+            )}
 
-              {/* Quick Amount Chips */}
-              <div className="flex gap-1">
-                {["15000", "25000", "50000", "100000"].map(chip => (
-                  <button
-                    key={chip}
-                    type="button"
-                    onClick={() => setFormAmount(chip)}
-                    className="flex-1 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 text-[9px] font-bold cursor-pointer"
-                  >
-                    {parseInt(chip) / 1000}rb
-                  </button>
-                ))}
+            {/* TAB: BUDGET */}
+            {activeTab === "budget" && (
+              <div className="fade-in flex flex-1 flex-col justify-between gap-2">
+                <div className="flex items-center justify-between border-b border-ink-600 pb-2">
+                  <h4 className="text-xs font-semibold text-paper-50">Anggaran dan tabungan</h4>
+                  <span className="text-[10px] font-medium text-mint">Terkontrol</span>
+                </div>
+
+                <div className="my-auto space-y-2.5">
+                  <div className="space-y-1.5 rounded-lg bg-ink-800 p-2.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="flex items-center gap-1.5 font-semibold text-paper-50">
+                        <Icon name="food" size={13} /> Makanan dan jajan
+                      </span>
+                      <span className="font-mono text-[10px] text-mist">Rp 750rb / 1,5jt</span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-ink-700">
+                      <div className="h-full w-1/2 rounded-full bg-signal" />
+                    </div>
+                    <p className="text-[9px] text-mist">Sisa kuota belanja aman: Rp 750.000</p>
+                  </div>
+
+                  <div className="space-y-1.5 rounded-lg bg-ink-800 p-2.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="flex items-center gap-1.5 font-semibold text-paper-50">
+                        <Icon name="car" size={13} /> Transport dan bensin
+                      </span>
+                      <span className="font-mono text-[10px] text-mist">Rp 200rb / 500rb</span>
+                    </div>
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-ink-700">
+                      <div className="h-full w-2/5 rounded-full bg-signal" />
+                    </div>
+                    <p className="text-[9px] text-mist">Sisa kuota: Rp 300.000 (40% terpakai)</p>
+                  </div>
+
+                  <div className="space-y-1.5 rounded-lg border border-signal/40 p-2.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="flex items-center gap-1.5 font-semibold text-signal">
+                        <Icon name="target" size={13} /> Liburan akhir tahun
+                      </span>
+                      <span className="font-mono text-[10px] font-medium text-signal">65%</span>
+                    </div>
+                    <p className="font-mono text-xs font-medium text-paper-50">Rp 6.500.000 / Rp 10.000.000</p>
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-ink-700">
+                      <div className="h-full w-[65%] rounded-full bg-signal" />
+                    </div>
+                  </div>
+                </div>
+
+                <p className="rounded-lg bg-ink-800 p-2 text-center text-[10px] text-mist">
+                  Peringatan otomatis aktif saat mendekati limit 80%.
+                </p>
               </div>
+            )}
 
-              {/* Amount Input */}
-              <input
-                type="number"
-                value={formAmount}
-                onChange={e => setFormAmount(e.target.value)}
-                className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-sm font-black text-white focus:outline-none focus:border-cyan-500"
-                placeholder="Nominal"
-              />
+            {/* TAB: SPLIT BILL */}
+            {activeTab === "splitbill" && (
+              <div className="fade-in flex flex-1 flex-col justify-between gap-2">
+                <div className="flex items-center justify-between border-b border-ink-600 pb-2">
+                  <h4 className="text-xs font-semibold text-paper-50">Kalkulator split bill</h4>
+                  <span className="text-[10px] font-medium text-signal">Instan</span>
+                </div>
 
-              {/* Title Input */}
-              <input
-                type="text"
-                value={formTitle}
-                onChange={e => setFormTitle(e.target.value)}
-                className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-cyan-500"
-                placeholder="Keterangan (Kopi, Gaji, dll)"
-              />
+                <div className="my-auto space-y-2">
+                  <div className="rounded-lg bg-ink-800 p-2.5">
+                    <label htmlFor="demo-bill" className="text-[10px] text-mist">
+                      Total tagihan (Rp)
+                    </label>
+                    <input
+                      id="demo-bill"
+                      type="number"
+                      value={billAmount}
+                      onChange={(e) => setBillAmount(Number(e.target.value) || 0)}
+                      className="w-full bg-transparent font-mono text-sm font-medium text-paper-50 focus:outline-none"
+                    />
+                  </div>
 
-              {/* Wallet Select */}
-              <select
-                value={formWallet}
-                onChange={e => setFormWallet(e.target.value)}
-                className="w-full p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none"
-              >
-                {wallets.map(w => (
-                  <option key={w.id} value={w.name}>
-                    {w.name}
-                  </option>
-                ))}
-              </select>
+                  <div className="flex items-center justify-between rounded-lg bg-ink-800 p-2.5">
+                    <span className="text-xs font-semibold text-paper-50">Jumlah orang</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        aria-label="Kurangi orang"
+                        onClick={() => setBillPeople(Math.max(1, billPeople - 1))}
+                        className="flex h-7 w-7 items-center justify-center rounded-md bg-ink-700 text-paper-50 hover:bg-ink-600"
+                      >
+                        <Icon name="minus" size={14} />
+                      </button>
+                      <span className="w-10 text-center font-mono text-xs font-medium text-signal">{billPeople} org</span>
+                      <button
+                        type="button"
+                        aria-label="Tambah orang"
+                        onClick={() => setBillPeople(billPeople + 1)}
+                        className="flex h-7 w-7 items-center justify-center rounded-md bg-ink-700 text-paper-50 hover:bg-ink-600"
+                      >
+                        <Icon name="plus" size={14} />
+                      </button>
+                    </div>
+                  </div>
 
-              {/* Submit */}
-              <button
-                type="button"
-                onClick={handleAddTransaction}
-                className="w-full py-2 rounded-xl bg-cyan-500 text-slate-950 font-black text-xs cursor-pointer shadow-lg active:scale-95"
-              >
-                Simpan Transaksi
-              </button>
-            </div>
+                  <div className="rounded-lg border border-signal/50 p-3 text-center">
+                    <p className="text-[10px] text-mist">Setiap orang bayar (+PPN 11%)</p>
+                    <p className="font-mono text-xl font-medium tracking-tight text-paper-50">{formatRupiah(perPerson)}</p>
+                    <p className="text-[9px] text-mist">Total + pajak dan tip: {formatRupiah(grandTotal)}</p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleCopyBill}
+                  className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-signal py-2.5 text-xs font-bold text-ink-950 transition-colors hover:bg-paper-50 active:scale-[0.98]"
+                >
+                  <Icon name={copiedBill ? "check" : "copy"} size={14} strokeWidth={2.2} />
+                  {copiedBill ? "Tersalin" : "Salin ke WhatsApp"}
+                </button>
+              </div>
+            )}
           </div>
-        )}
 
+          {/* Navigasi bawah */}
+          <nav aria-label="Navigasi aplikasi demo" className="relative z-30 flex items-center justify-around px-1 pb-1.5 pt-2">
+            {TABS.map((tab) => {
+              const active = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  aria-current={active ? "page" : undefined}
+                  className={"flex flex-col items-center gap-0.5 px-3 text-[9px] font-semibold transition-colors " + (active ? "text-signal" : "text-mist hover:text-paper-50")}
+                >
+                  <Icon name={tab.icon} size={17} />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* Lembar tambah transaksi */}
+          {showAddModal && (
+            <div className="fade-in absolute inset-0 z-40 flex flex-col justify-end bg-ink-950/90 p-2">
+              <div className="space-y-2.5 rounded-3xl border border-ink-600 bg-ink-800 p-3.5 shadow-2xl">
+                <div className="flex items-center justify-between border-b border-ink-600 pb-2">
+                  <span className="text-xs font-semibold text-paper-50">Catat transaksi</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddModal(false)}
+                    aria-label="Tutup"
+                    className="flex h-6 w-6 items-center justify-center rounded-full bg-ink-700 text-mist hover:text-paper-50"
+                  >
+                    <Icon name="close" size={12} strokeWidth={2.4} />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-1 rounded-lg bg-ink-950 p-0.5 text-[11px] font-semibold">
+                  <button
+                    type="button"
+                    onClick={() => setFormType("expense")}
+                    className={"rounded-md py-1.5 " + (formType === "expense" ? "bg-coral text-ink-950" : "text-mist")}
+                  >
+                    Pengeluaran
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormType("income")}
+                    className={"rounded-md py-1.5 " + (formType === "income" ? "bg-mint text-ink-950" : "text-mist")}
+                  >
+                    Pemasukan
+                  </button>
+                </div>
+
+                <div className="flex gap-1">
+                  {["15000", "25000", "50000", "100000"].map((chip) => (
+                    <button
+                      key={chip}
+                      type="button"
+                      onClick={() => setFormAmount(chip)}
+                      className="flex-1 rounded-md bg-ink-700 py-1.5 font-mono text-[10px] font-medium text-paper-100 hover:bg-ink-600"
+                    >
+                      {parseInt(chip) / 1000}rb
+                    </button>
+                  ))}
+                </div>
+
+                <input
+                  type="number"
+                  value={formAmount}
+                  onChange={(e) => setFormAmount(e.target.value)}
+                  aria-label="Nominal"
+                  className="w-full rounded-lg border border-ink-600 bg-ink-950 px-2.5 py-2 font-mono text-sm font-medium text-paper-50 focus:border-signal focus:outline-none"
+                  placeholder="Nominal"
+                />
+
+                <input
+                  type="text"
+                  value={formTitle}
+                  onChange={(e) => setFormTitle(e.target.value)}
+                  aria-label="Keterangan"
+                  className="w-full rounded-lg border border-ink-600 bg-ink-950 px-2.5 py-2 text-xs text-paper-50 focus:border-signal focus:outline-none"
+                  placeholder="Keterangan (kopi, gaji, dll)"
+                />
+
+                <select
+                  value={formWallet}
+                  onChange={(e) => setFormWallet(e.target.value)}
+                  aria-label="Dompet"
+                  className="w-full rounded-lg border border-ink-600 bg-ink-950 p-2 text-xs text-paper-50 focus:border-signal focus:outline-none"
+                >
+                  {wallets.map((w) => (
+                    <option key={w.id} value={w.name}>
+                      {w.name}
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  type="button"
+                  onClick={handleAddTransaction}
+                  className="w-full rounded-lg bg-signal py-2.5 text-xs font-bold text-ink-950 hover:bg-paper-50 active:scale-[0.98]"
+                >
+                  Simpan transaksi
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

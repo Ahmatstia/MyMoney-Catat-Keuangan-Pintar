@@ -1,60 +1,353 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --bg-primary: #080c14;
-    --bg-secondary: #0f172a;
-    --bg-card: rgba(15, 23, 42, 0.7);
-    --border-card: rgba(56, 189, 248, 0.15);
-    --accent-emerald: #10b981;
-    --accent-cyan: #06b6d4;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-  }
+/* ------------------------------------------------------------------
+   MyMoney design system: "Struk"
+   Halaman dirancang seperti struk dan buku kas. Dua permukaan utama:
+   tinta (hijau tua) dan kertas (putih kehijauan seperti kertas termal),
+   dipisah tepi sobekan. Satu warna sinyal (cyan, warna brand).
+   Merah hanya untuk cap dan pengeluaran, mint hanya untuk pemasukan.
+------------------------------------------------------------------- */
+
+@theme inline {
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-ink-950: #051c19;
+  --color-ink-900: #082a26;
+  --color-ink-800: #0d3732;
+  --color-ink-700: #164a43;
+  --color-ink-600: #23665d;
+
+  --color-paper-50: #f3f7f4;
+  --color-paper-100: #e6eee9;
+  --color-paper-200: #d3dfd8;
+  --color-paper-300: #b4c7be;
+
+  --color-leaf: #0c2723;
+  --color-mist: #9fbdb6;
+  --color-moss: #476560;
+
+  --color-signal: #3bdce6;
+  --color-signal-deep: #07656c;
+  --color-mint: #8be8bc;
+  --color-coral: #ff7a66;
+  --color-stamp: #c93a28;
+}
+
+:root {
+  --surface: var(--color-ink-900);
+  --tear: 22px;
 }
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink-600) var(--color-ink-950);
 }
 
 body {
-  background-color: #080c14;
-  color: #f8fafc;
+  background: var(--color-ink-900);
+  color: var(--color-paper-100);
+  font-family: var(--font-sans);
   overflow-x: hidden;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* HIDE ALL SCROLLBARS GLOBALLY */
-* {
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
+::selection {
+  background: var(--color-signal);
+  color: var(--color-ink-950);
 }
 
-*::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 3px;
 }
 
-/* Glassmorphism utility */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Layar ponsel di demo: tanpa scrollbar, karena tinggi tetap. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-.glass-panel-glow {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(6, 182, 212, 0.25);
-  box-shadow: 0 0 30px rgba(6, 182, 212, 0.1);
+/* ---------- Permukaan ---------- */
+
+.surface-ink {
+  --surface: var(--color-ink-900);
+  background: var(--surface);
+  color: var(--color-paper-100);
 }
 
-/* Gradient text */
-.text-gradient {
-  background: linear-gradient(135deg, #38bdf8 0%, #10b981 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.surface-ink-deep {
+  --surface: var(--color-ink-950);
+  background: var(--surface);
+  color: var(--color-paper-100);
+}
+
+.surface-paper {
+  --surface: var(--color-paper-100);
+  background-color: var(--surface);
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .05 0 0 0 0 .15 0 0 0 0 .13 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color: var(--color-leaf);
+}
+
+.surface-paper :focus-visible {
+  outline-color: var(--color-signal-deep);
+}
+
+.surface-signal {
+  --surface: var(--color-signal);
+  background: var(--surface);
+  color: var(--color-ink-950);
+}
+
+.surface-signal :focus-visible {
+  outline-color: var(--color-ink-950);
+}
+
+/* Tepi sobekan struk di bagian atas sebuah section. */
+.tear-top {
+  position: relative;
+}
+.tear-top::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--tear) / -2 + 1px);
+  height: calc(var(--tear) / 2);
+  background: var(--surface);
+  pointer-events: none;
+  -webkit-mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 50% 0 / var(--tear) 100%;
+  mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 50% 0 / var(--tear) 100%;
+}
+
+/* ---------- Tipografi ---------- */
+
+.h-section {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2rem, 4.2vw, 3.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.lede {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  max-width: 38rem;
+}
+
+/* ---------- Struk ---------- */
+
+.receipt {
+  --tear: 14px;
+  background: var(--color-paper-50);
+  color: var(--color-leaf);
+  font-family: var(--font-mono);
+  padding-bottom: calc(var(--tear) / 2 + 1.25rem);
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--tear) / 2 + 1px) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / var(--tear) calc(var(--tear) / 2) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--tear) / 2 + 1px) no-repeat,
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / var(--tear) calc(var(--tear) / 2) repeat-x;
+}
+
+.leader {
+  flex: 1;
+  min-width: 0.75rem;
+  border-bottom: 2px dotted currentColor;
+  opacity: 0.35;
+  transform: translateY(-0.2em);
+}
+
+.stamp {
+  display: inline-block;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  padding: 0.1rem 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: rotate(-6deg);
+  opacity: 0.92;
+}
+
+/* ---------- Gerak ---------- */
+
+/* Satu momen utama saat halaman dibuka: judul naik kata per kata,
+   lalu struk tercetak. Selebihnya gerak hanya menjawab aksi pengguna. */
+.word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+.word > span {
+  display: inline-block;
+  transform: translateY(108%);
+  animation: word-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 70ms + 120ms);
+}
+@keyframes word-up {
+  to {
+    transform: translateY(0);
+  }
+}
+
+.print-feed {
+  animation: print-feed 1.9s steps(34, end) 0.7s both;
+}
+@keyframes print-feed {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.line-in {
+  overflow: hidden;
+  animation: line-in 0.45s ease-out both;
+}
+@keyframes line-in {
+  from {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    max-height: 4.5rem;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fade-in {
+  animation: fade-in 0.35s ease-out both;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Slider ---------- */
+
+.range {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+}
+.range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-ink-700);
+}
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border-radius: 999px;
+  background: var(--color-signal);
+  border: 3px solid var(--color-ink-950);
+}
+.range::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-ink-700);
+}
+.range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--color-signal);
+  border: 3px solid var(--color-ink-950);
+}
+
+/* ---------- Aliran data (bagian keamanan) ---------- */
+
+.packet {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  translate: 0 -50%;
+  opacity: 0;
+  animation: flow-x 2.7s linear infinite;
+  animation-delay: var(--d, 0s);
+}
+@keyframes flow-x {
+  0% { left: 0; opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { left: calc(100% - 2rem); opacity: 0; }
+}
+@keyframes flow-y {
+  0% { top: 0; opacity: 0; }
+  12% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { top: calc(100% - 1.25rem); opacity: 0; }
+}
+@media (max-width: 767px) {
+  .packet {
+    left: 50%;
+    top: 0;
+    translate: -50% 0;
+    animation-name: flow-y;
+  }
+}
+
+/* ---------- FAQ ---------- */
+
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+}
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+.faq details[open] > .faq-body {
+  animation: fade-in 0.35s ease-out both;
+}
+
+/* ---------- Preferensi pengguna ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .word > span {
+    animation: none;
+    transform: none;
+  }
+  .print-feed,
+  .line-in,
+  .fade-in,
+  .faq details[open] > .faq-body {
+    animation: none;
+  }
+  .packet {
+    animation: none;
+    opacity: 1;
+    left: 30%;
+  }
 }
