@@ -1,0 +1,12 @@
+{
+  "latestVersion": "1.0.9",
+  "latestVersionCode": 22,
+  "title": "Versi Baru Tersedia! 🚀",
+  "message": "Update MyMoney sekarang untuk menikmati performa lebih cepat, akurasi model terbaru, dan perbaikan batas belanja.",
+  "releaseNotes": [
+    "Peningkatan akurasi model sistem dan prediksi pengeluaran",
+    "Perbaikan bug sisa batas belanja harian",
+    "Peningkatan performa dan kestabilan aplikasi"
+  ],
+  "forceUpdate": false
+}
