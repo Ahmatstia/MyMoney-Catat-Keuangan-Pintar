@@ -5,7 +5,7 @@
 // Selama kosong, tombol unduh hanya menggulir ke bagian "Unduh".
 export const PLAY_STORE_URL = "";
 
-export const APP_VERSION = "v1.0.9";
+export const APP_VERSION = "v1.1.0";
 export const SUPPORT_EMAIL = "support.lexanova@gmail.com";
 
 export const NAV_LINKS = [
