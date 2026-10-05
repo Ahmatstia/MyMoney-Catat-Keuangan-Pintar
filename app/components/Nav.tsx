@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { APP_VERSION, NAV_LINKS, PLAY_STORE_URL } from "../site";
+import { APP_VERSION, IS_CLOSED_TESTING, NAV_LINKS, PLAY_STORE_URL } from "../site";
 
 export default function Nav() {
   const downloadHref = PLAY_STORE_URL || "/#download";
@@ -35,10 +35,12 @@ export default function Nav() {
         <div className="flex items-center gap-3">
           <a
             href={downloadHref}
+            target={PLAY_STORE_URL ? "_blank" : undefined}
+            rel={PLAY_STORE_URL ? "noopener noreferrer" : undefined}
             className="whitespace-nowrap rounded-md bg-signal px-4 py-2 text-sm font-semibold text-ink-950 transition-colors hover:bg-paper-50"
           >
-            <span className="sm:hidden">Unduh</span>
-            <span className="hidden sm:inline">Unduh aplikasi</span>
+            <span className="sm:hidden">{IS_CLOSED_TESTING ? "Uji Coba" : "Unduh"}</span>
+            <span className="hidden sm:inline">{IS_CLOSED_TESTING ? "Uji Coba Beta" : "Unduh aplikasi"}</span>
           </a>
 
           {/* Menu ponsel tanpa JavaScript */}

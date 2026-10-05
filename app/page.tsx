@@ -6,7 +6,7 @@ import FeatureLab from "./components/FeatureLab";
 import DataJourney from "./components/DataJourney";
 import CompareReceipts from "./components/CompareReceipts";
 import Faq from "./components/Faq";
-import { PLAY_STORE_URL } from "./site";
+import { IS_CLOSED_TESTING, PLAY_STORE_URL } from "./site";
 
 const HEADLINE = ["Catat", "setiap", "rupiah,", "simpan", "di", "ponsel", "Anda."];
 
@@ -43,12 +43,14 @@ export default function Home() {
               <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
                 <a
                   href={downloadHref}
+                  target={PLAY_STORE_URL ? "_blank" : undefined}
+                  rel={PLAY_STORE_URL ? "noopener noreferrer" : undefined}
                   className="inline-flex items-center gap-2.5 rounded-md bg-signal px-6 py-3.5 text-sm font-bold text-ink-950 transition-colors hover:bg-paper-50"
                 >
                   <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
                     <path d={PLAY_ICON} />
                   </svg>
-                  Download di Play Store
+                  {IS_CLOSED_TESTING ? "Gabung Uji Coba (Closed Beta)" : "Download di Play Store"}
                 </a>
                 <a
                   href="#fitur"
@@ -58,7 +60,11 @@ export default function Home() {
                 </a>
               </div>
 
-              <p className="mt-6 text-sm text-mist">Gratis. Tanpa akun. Tanpa iklan.</p>
+              <p className="mt-6 text-sm text-mist">
+                {IS_CLOSED_TESTING
+                  ? "✨ Khusus akun Google yang terdaftar sebagai tester."
+                  : "Gratis. Tanpa akun. Tanpa iklan."}
+              </p>
             </div>
 
             <div id="demo" className="scroll-mt-24 lg:col-span-6">
@@ -96,15 +102,28 @@ export default function Home() {
             <p className="mt-6 max-w-xl text-lg leading-relaxed">
               Gratis, tanpa akun, dan tetap jalan tanpa internet. Data keuangan Anda tinggal di ponsel Anda.
             </p>
-            <a
-              href={downloadHref}
-              className="mt-10 inline-flex items-center gap-3 rounded-md bg-ink-950 px-7 py-4 text-base font-bold text-paper-50 transition-colors hover:bg-ink-800"
-            >
-              <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
-                <path d={PLAY_ICON} />
-              </svg>
-              {PLAY_STORE_URL ? "Unduh di Google Play" : "Tersedia di Google Play"}
-            </a>
+            <div className="mt-10 flex flex-col items-start gap-3">
+              <a
+                href={downloadHref}
+                target={PLAY_STORE_URL ? "_blank" : undefined}
+                rel={PLAY_STORE_URL ? "noopener noreferrer" : undefined}
+                className="inline-flex items-center gap-3 rounded-md bg-ink-950 px-7 py-4 text-base font-bold text-paper-50 transition-colors hover:bg-ink-800"
+              >
+                <svg className="h-5 w-5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d={PLAY_ICON} />
+                </svg>
+                {IS_CLOSED_TESTING
+                  ? "Gabung Uji Coba di Google Play"
+                  : PLAY_STORE_URL
+                  ? "Unduh di Google Play"
+                  : "Tersedia di Google Play"}
+              </a>
+              {IS_CLOSED_TESTING && (
+                <p className="text-sm font-medium text-ink-950/80">
+                  * Akses pengujian terbuka untuk akun Google tester yang telah didaftarkan.
+                </p>
+              )}
+            </div>
           </div>
         </section>
       </main>
