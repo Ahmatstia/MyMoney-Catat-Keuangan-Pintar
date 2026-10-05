@@ -1,11 +1,12 @@
 {
-  "latestVersion": "1.1.1",
-  "latestVersionCode": 25,
+  "latestVersion": "1.1.0",
+  "latestVersionCode": 24,
   "title": "Versi Baru Tersedia! 🚀",
-  "message": "Update MyMoney v1.1.1 sekarang untuk mencoba fitur terbaru!",
+  "message": "Update MyMoney v1.1.0 sekarang untuk menikmati performa lebih cepat dan fitur terbaru.",
   "releaseNotes": [
-    "Simulasi uji coba in-app update berhasil!",
-    "Peningkatan stabilitas dan performa sistem"
+    "Peningkatan akurasi model AI",
+    "Perbaikan bug",
+    "Optimasi performa"
   ],
   "forceUpdate": false
 }
