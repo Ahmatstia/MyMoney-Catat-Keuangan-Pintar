@@ -21,7 +21,7 @@ function Receipt({
   className?: string;
 }) {
   return (
-    <div className={"drop-shadow-[0_16px_24px_rgba(8,42,38,0.22)] " + className}>
+    <div className={"drop-shadow-[0_16px_24px_rgba(0,0,0,0.5)] " + className}>
       <div className="receipt px-6 pt-7 sm:px-8">
         <p className="font-display text-2xl font-bold leading-none">{title}</p>
         <p className="mt-1.5 text-xs text-moss">{subtitle}</p>
@@ -48,8 +48,8 @@ function Receipt({
 export default function CompareReceipts() {
   return (
     <div className="mx-auto max-w-7xl px-5 sm:px-8">
-      <h2 className="h-section max-w-3xl">Mengapa pendekatan offline-first lebih baik?</h2>
-      <p className="lede mt-5 text-moss">
+      <h2 className="h-section max-w-3xl text-paper-50">Mengapa pendekatan offline-first lebih baik?</h2>
+      <p className="lede mt-5 text-mist">
         Perbandingan transparan MyMoney dengan aplikasi pencatat keuangan berbasis server cloud biasa.
       </p>
 

@@ -16,23 +16,23 @@ const ITEMS = [
 export default function Faq() {
   return (
     <div className="mx-auto grid max-w-7xl gap-10 px-5 sm:px-8 lg:grid-cols-12 lg:gap-16">
-      <h2 className="h-section text-paper-50 lg:col-span-4">Pertanyaan yang sering diajukan</h2>
+      <h2 className="h-section lg:col-span-4">Pertanyaan yang sering diajukan</h2>
 
       <div className="faq lg:col-span-8">
         {ITEMS.map((item, i) => (
-          <details key={item.q} name="faq" open={i === 0} className="group border-t border-ink-600 last:border-b">
+          <details key={item.q} name="faq" open={i === 0} className="group border-t border-paper-300 last:border-b">
             <summary className="flex items-center justify-between gap-6 py-6 text-left">
-              <span className="font-display text-xl font-bold tracking-tight text-paper-50 sm:text-2xl">{item.q}</span>
+              <span className="font-display text-xl font-bold tracking-tight sm:text-2xl">{item.q}</span>
               <span
                 aria-hidden="true"
-                className="relative h-7 w-7 shrink-0 rounded-full border border-ink-600 transition-colors group-open:border-signal group-open:bg-signal"
+                className="relative h-7 w-7 shrink-0 rounded-full border border-paper-300 transition-colors group-open:border-leaf group-open:bg-leaf"
               >
-                <span className="absolute left-1/2 top-1/2 h-0.5 w-3 -translate-x-1/2 -translate-y-1/2 bg-paper-100 group-open:bg-ink-950" />
-                <span className="absolute left-1/2 top-1/2 h-3 w-0.5 -translate-x-1/2 -translate-y-1/2 bg-paper-100 transition-transform group-open:scale-y-0 group-open:bg-ink-950" />
+                <span className="absolute left-1/2 top-1/2 h-0.5 w-3 -translate-x-1/2 -translate-y-1/2 bg-leaf group-open:bg-paper-50" />
+                <span className="absolute left-1/2 top-1/2 h-3 w-0.5 -translate-x-1/2 -translate-y-1/2 bg-leaf transition-transform group-open:scale-y-0 group-open:bg-paper-50" />
               </span>
             </summary>
             <div className="faq-body pb-7 pr-12">
-              <p className="max-w-xl text-base leading-relaxed text-mist">{item.a}</p>
+              <p className="max-w-xl text-base leading-relaxed text-moss">{item.a}</p>
             </div>
           </details>
         ))}

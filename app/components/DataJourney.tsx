@@ -2,6 +2,7 @@
 
 import { useState, type CSSProperties } from "react";
 import Icon, { type IconName } from "./Icon";
+import SecurityLab from "./SecurityLab";
 
 type Mode = "cloud" | "local";
 
@@ -99,6 +100,8 @@ export default function DataJourney() {
           </div>
         ))}
       </dl>
+
+      <SecurityLab />
     </div>
   );
 }

@@ -4,7 +4,9 @@ export type IconName =
   | "home" | "history" | "target" | "calc" | "eye" | "eyeOff" | "plane" | "plus" | "minus"
   | "close" | "bank" | "cash" | "wallet" | "coffee" | "fuel" | "food" | "car" | "spark"
   | "check" | "copy" | "lock" | "reset" | "shield" | "userOff" | "fingerprint" | "backup"
-  | "server" | "users" | "phone";
+  | "server" | "users" | "phone" | "flame" | "calendar" | "pie" | "trend" | "receipt" | "swap"
+  | "clock" | "bell" | "chevronLeft" | "chevronRight" | "trophy" | "heart" | "backspace" | "file"
+  | "palette" | "bulb" | "card" | "arrowRight" | "bag" | "piggy" | "trash";
 
 // Satu keluarga ikon garis (grid 24, stroke 1.8) supaya konsisten di seluruh situs.
 const PATHS: Record<IconName, ReactNode> = {
@@ -37,6 +39,27 @@ const PATHS: Record<IconName, ReactNode> = {
   server: (<><rect x="3.5" y="4" width="17" height="6.5" rx="1.5" /><rect x="3.5" y="13.5" width="17" height="6.5" rx="1.5" /><path d="M7 7.25h.01M7 16.75h.01" /></>),
   users: (<><circle cx="9" cy="8.5" r="3.2" /><path d="M2.8 20c.4-3.3 3-5.2 6.2-5.2s5.8 1.9 6.2 5.2" /><path d="M16 5.6a3 3 0 0 1 0 5.8M18.5 14.8c1.7.6 2.6 2.2 2.8 4.2" /></>),
   phone: (<><rect x="6.5" y="2.5" width="11" height="19" rx="2.5" /><path d="M10.5 18.5h3" /></>),
+  flame: <path d="M12 3c.5 3-1.5 4.5-3 6.5-1.3 1.8-2 3.3-2 5.2a5 5 0 0 0 10 0c0-1.7-.7-3-1.8-4.2.1 1.2-.4 2.2-1.4 2.7.6-3.2-.4-6.5-1.8-10.2Z" />,
+  calendar: (<><rect x="3.5" y="5" width="17" height="15.5" rx="2" /><path d="M3.5 10h17M8 3v4M16 3v4" /></>),
+  pie: (<><path d="M12 3.5v8.5h8.5A8.5 8.5 0 0 0 12 3.5Z" /><path d="M10.5 5A8.5 8.5 0 1 0 19 13.5" /></>),
+  trend: (<><path d="M3.5 17 9.5 11l4 4 7-8" /><path d="M15 7h5.5v5.5" /></>),
+  receipt: (<><path d="M6 3.5h12v17l-2.2-1.6L13.6 20.5 12 19l-1.6 1.5-2.2-1.6L6 20.5v-17Z" /><path d="M9 8h6M9 12h6" /></>),
+  swap: (<><path d="M4 8h14l-3.5-3.5M20 16H6l3.5 3.5" /></>),
+  clock: (<><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></>),
+  bell: (<><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2H4.5l1.5-2Z" /><path d="M10 20.5a2.2 2.2 0 0 0 4 0" /></>),
+  chevronLeft: <path d="m14.5 5.5-6.5 6.5 6.5 6.5" />,
+  chevronRight: <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />,
+  trophy: (<><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z" /><path d="M8 6H4.5v1.5A3 3 0 0 0 8 10.5M16 6h3.5v1.5a3 3 0 0 1-3.5 3" /><path d="M12 13v4M8.5 20.5h7M9.5 17h5" /></>),
+  heart: <path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20Z" />,
+  backspace: (<><path d="M9 6h10.5v12H9l-5.5-6L9 6Z" /><path d="m12.5 9.5 4 5M16.5 9.5l-4 5" /></>),
+  file: (<><path d="M6.5 3.5h7l4 4v13h-11v-17Z" /><path d="M13.5 3.5v4h4M9.5 13h5M9.5 16.5h5" /></>),
+  palette: (<><path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.4 0 2-.9 2-1.8 0-1.2-1-1.5-1-2.7 0-1 .8-1.5 1.8-1.5H17a3.5 3.5 0 0 0 3.5-3.5C20.5 6.6 16.7 3.5 12 3.5Z" /><path d="M7.5 11v.01M10 7.8v.01M14.2 7.8v.01" /></>),
+  bulb: (<><path d="M9 17.5h6M10 20.5h4" /><path d="M12 3.5a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3.5Z" /></>),
+  card: (<><rect x="2.5" y="5.5" width="19" height="13" rx="2" /><path d="M2.5 10h19M6 15h4" /></>),
+  arrowRight: <path d="M4.5 12h15M14 6.5l5.5 5.5-5.5 5.5" />,
+  bag: (<><path d="M5.5 8h13l-1 12.5h-11L5.5 8Z" /><path d="M9 8V6.5a3 3 0 0 1 6 0V8" /></>),
+  piggy: (<><path d="M5 12.5c0-3 3-5 7-5s6.5 1.8 7 4.2l1.5.8v3l-1.8.5c-.5 1.3-1.4 2.3-2.7 2.8V21h-2.5v-1.5h-3V21H8.5v-2.2C6.4 18 5 15.8 5 12.5Z" /><path d="M16 11.2v.01M9 7.5c0-1.6.8-2.7 2-3" /></>),
+  trash: (<><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13" /><path d="M10 11v6M14 11v6" /></>),
 };
 
 export default function Icon({

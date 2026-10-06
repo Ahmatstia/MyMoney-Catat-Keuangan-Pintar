@@ -8,11 +8,16 @@
    Merah hanya untuk cap dan pengeluaran, mint hanya untuk pemasukan.
 ------------------------------------------------------------------- */
 
+/* Font: inline, karena nilainya berasal dari variabel next/font di <html>. */
 @theme inline {
   --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-dm-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
 
+/* Warna: TIDAK inline, supaya utilitas memakai var(--color-*) dan sebuah
+   wadah (misalnya demo ponsel) bisa menimpanya untuk fitur pemilih tema. */
+@theme {
   --color-ink-950: #051c19;
   --color-ink-900: #082a26;
   --color-ink-800: #0d3732;
@@ -32,6 +37,8 @@
   --color-signal-deep: #07656c;
   --color-mint: #8be8bc;
   --color-coral: #ff7a66;
+  --color-amber: #f4c14d;
+  --color-amber-deep: #8a5a00;
   --color-stamp: #c93a28;
 }
 
@@ -247,6 +254,91 @@ body {
   }
 }
 
+.shake {
+  animation: shake 0.42s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+@keyframes shake {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-6px); }
+  40%, 60% { transform: translateX(6px); }
+}
+
+.stamp-in {
+  animation: stamp-in 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+@keyframes stamp-in {
+  from { opacity: 0; transform: rotate(-6deg) scale(2.2); }
+  to { opacity: 0.92; transform: rotate(-6deg) scale(1); }
+}
+
+.toast-in {
+  animation: toast-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-14px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+.pop {
+  animation: pop 0.35s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+}
+@keyframes pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.type-in {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+  width: 0;
+  animation: type-in 1.1s steps(6, end) 0.35s forwards;
+}
+@keyframes type-in {
+  to { width: 6ch; }
+}
+
+.hop {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  translate: 0 -50%;
+  opacity: 0;
+  animation: flow-x 2s linear infinite;
+  animation-delay: var(--d, 0s);
+}
+
+.flicker {
+  animation: flicker 1.6s ease-in-out infinite;
+  transform-origin: 50% 90%;
+}
+@keyframes flicker {
+  0%, 100% { transform: scale(1) rotate(-2deg); }
+  50% { transform: scale(1.1) rotate(2deg); }
+}
+
+.dash-draw {
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+  animation: dash-draw 1.1s cubic-bezier(0.3, 0.7, 0.2, 1) 0.1s forwards;
+}
+@keyframes dash-draw {
+  to { stroke-dashoffset: var(--off, 0); }
+}
+
+/* Pita progres scroll: lebar diatur lewat JS (transform), tanpa render ulang React. */
+.scroll-ribbon {
+  position: absolute;
+  inset: auto 0 -1px 0;
+  height: 3px;
+  background: var(--color-signal);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  will-change: transform;
+}
+
 /* ---------- Slider ---------- */
 
 .range {
@@ -282,6 +374,23 @@ body {
   border-radius: 999px;
   background: var(--color-signal);
   border: 3px solid var(--color-ink-950);
+}
+
+/* Varian untuk permukaan kertas */
+.range.on-paper::-webkit-slider-runnable-track {
+  background: var(--color-paper-300);
+}
+.range.on-paper::-webkit-slider-thumb {
+  background: var(--color-signal-deep);
+  border-color: var(--color-paper-50);
+  box-shadow: 0 0 0 1px var(--color-signal-deep);
+}
+.range.on-paper::-moz-range-track {
+  background: var(--color-paper-300);
+}
+.range.on-paper::-moz-range-thumb {
+  background: var(--color-signal-deep);
+  border-color: var(--color-paper-50);
 }
 
 /* ---------- Aliran data (bagian keamanan) ---------- */
@@ -342,6 +451,12 @@ body {
   .print-feed,
   .line-in,
   .fade-in,
+  .shake,
+  .stamp-in,
+  .toast-in,
+  .pop,
+  .flicker,
+  .dash-draw,
   .faq details[open] > .faq-body {
     animation: none;
   }
@@ -349,5 +464,17 @@ body {
     animation: none;
     opacity: 1;
     left: 30%;
+  }
+  .dash-draw {
+    stroke-dashoffset: var(--off, 0);
+  }
+  .type-in {
+    animation: none;
+    width: 6ch;
+  }
+  .hop {
+    animation: none;
+    opacity: 1;
+    left: 40%;
   }
 }

@@ -3,7 +3,10 @@ import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import InteractivePhoneDemo from "./components/InteractivePhoneDemo";
 import FeatureLab from "./components/FeatureLab";
+import DayStory from "./components/DayStory";
+import Analytics from "./components/Analytics";
 import DataJourney from "./components/DataJourney";
+import Toolbox from "./components/Toolbox";
 import CompareReceipts from "./components/CompareReceipts";
 import Faq from "./components/Faq";
 import { IS_CLOSED_TESTING, PLAY_STORE_URL } from "./site";
@@ -78,18 +81,33 @@ export default function Home() {
           <FeatureLab />
         </section>
 
+        {/* Cerita satu hari */}
+        <section id="cerita" className="surface-ink tear-top scroll-mt-16 py-24 md:py-32">
+          <DayStory />
+        </section>
+
+        {/* Analisis */}
+        <section id="analisis" className="surface-paper tear-top scroll-mt-16 py-24 md:py-32">
+          <Analytics />
+        </section>
+
         {/* Keamanan */}
         <section id="keamanan" className="surface-ink tear-top scroll-mt-16 py-24 md:py-32">
           <DataJourney />
         </section>
 
+        {/* Alat keuangan */}
+        <section id="alat" className="surface-paper tear-top scroll-mt-16 py-24 md:py-32">
+          <Toolbox />
+        </section>
+
         {/* Perbandingan */}
-        <section id="perbandingan" className="surface-paper tear-top scroll-mt-16 py-24 md:py-32">
+        <section id="perbandingan" className="surface-ink tear-top scroll-mt-16 py-24 md:py-32">
           <CompareReceipts />
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="surface-ink tear-top scroll-mt-16 py-24 md:py-32">
+        <section id="faq" className="surface-paper tear-top scroll-mt-16 py-24 md:py-32">
           <Faq />
         </section>
 
