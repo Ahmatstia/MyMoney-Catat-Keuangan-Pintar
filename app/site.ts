@@ -7,11 +7,11 @@
 // Untuk Closed Testing: "https://play.google.com/apps/testing/com.lexanova.mymoney"
 // Untuk Publik / Production: "https://play.google.com/store/apps/details?id=com.lexanova.mymoney"
 export const PLAY_STORE_URL =
-  "https://play.google.com/apps/testing/com.lexanova.mymoney";
+  "https://play.google.com/store/apps/details?id=com.lexanova.mymoney";
 
 // Set true jika masih dalam tahap Closed Testing (khusus tester terdaftar),
 // Ubah ke false jika aplikasi sudah rilis publik di Google Play (Production).
-export const IS_CLOSED_TESTING = true;
+export const IS_CLOSED_TESTING = false;
 
 export const APP_VERSION = "v1.1.2";
 export const SUPPORT_EMAIL = "support.lexanova@gmail.com";
