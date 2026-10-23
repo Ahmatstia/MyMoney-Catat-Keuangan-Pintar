@@ -1,12 +1,10 @@
 {
-  "latestVersion": "1.1.2",
-  "latestVersionCode": 27,
+  "latestVersion": "1.1.1",
+  "latestVersionCode": 26,
   "title": "Versi Baru Tersedia! 🚀",
-  "message": "Update MyMoney v1.1.2 sekarang untuk menikmati performa lebih cepat dan fitur terbaru.",
+  "message": "Update MyMoney sekarang untuk menikmati performa lebih cepat dan fitur terbaru.",
   "releaseNotes": [
-    "Pembaruan visual logo & banner Play Store",
-    "Presisi jam masuk transaksi rutin",
-    "Peningkatan performa dan audit stabilitas"
+    "Peningkatan stabilitas dan perbaikan bug"
   ],
   "forceUpdate": false
 }
