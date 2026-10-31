@@ -13,7 +13,7 @@ export const PLAY_STORE_URL =
 // Ubah ke false jika aplikasi sudah rilis publik di Google Play (Production).
 export const IS_CLOSED_TESTING = false;
 
-export const APP_VERSION = "v1.1.2";
+export const APP_VERSION = "v1.1.4";
 export const SUPPORT_EMAIL = "support.lexanova@gmail.com";
 
 export const NAV_LINKS = [
