@@ -28,7 +28,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "MyMoney: Catat Keuangan Pintar | Aplikasi Pengelola Keuangan Offline & Aman",
+  title: "MyMoney: Pencatatan keuangan",
   description:
     "Kelola keuangan harian, catat pemasukan & pengeluaran, pantau anggaran belanja, dan capai target tabungan secara 100% offline, privat, dan aman bersama MyMoney.",
   keywords: [
