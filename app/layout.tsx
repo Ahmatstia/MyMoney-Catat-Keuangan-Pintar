@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     apple: "/logo.png",
   },
   openGraph: {
-    title: "MyMoney: Catat Keuangan Pintar",
+    title: "MyMoney: Pencatatan keuangan",
     description:
       "Aplikasi pengelola keuangan pribadi offline-first terbaik. Privasi 100% aman di perangkat Anda.",
     type: "website",
